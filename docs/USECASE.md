@@ -7,4 +7,5 @@
 - Exporting all layers of visualization
 - Export *(specific layer)* of visualization
 - Open the executable to launch the program
-- Click the exit button to exit the program 
+- Click the exit button to exit the program
+- Import layer
