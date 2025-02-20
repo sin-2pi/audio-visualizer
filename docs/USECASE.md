@@ -3,9 +3,8 @@
 - Create a project
 - Open project
 - Save project
-- Select specifc layers to process
-- Exporting all layers of visualization
-- Export *(specific layer)* of visualization
+- Import layer
+- Select specific layers to process
+- Export layer(s) of visualization
 - Open the executable to launch the program
 - Click the exit button to exit the program
-- Import layer
