@@ -1,1 +1,10 @@
-
+## Use Cases
+- Uploading a file
+- Create a project
+- Open project
+- Save project
+- Select specifc layers to process
+- Exporting all layers of visualization
+- Export *(specific layer)* of visualization
+- Open the executable to launch the program
+- Click the exit button to exit the program 
