@@ -1,4 +1,4 @@
-package com.AudioVisualizer;
+package com.cosc3011;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
