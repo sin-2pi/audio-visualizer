@@ -1,4 +1,4 @@
-package com.AudioVisualizer;
+package com.cosc3011;
 
 import javax.swing.SwingUtilities;
 
