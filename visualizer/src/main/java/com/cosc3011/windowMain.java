@@ -38,12 +38,11 @@ public class windowMain {
         JLabel or = new JLabel("Or");
         Button openExisting = new Button("Open an existing project");
 
-        // Initialize the error message label
-        errorMessageLabel = new JLabel("");
-        errorMessageLabel.setForeground(Color.RED); // Set text color to red for error messages
 
-        // Adds text field opening to create new file
-        // Saves inputed file name to new variable "newFileName"
+        errorMessageLabel = new JLabel("");
+        errorMessageLabel.setForeground(Color.RED);
+
+
         create.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,28 +54,34 @@ public class windowMain {
                 fileName.setAlwaysOnTop(true);
                 fileName.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 fileName.setVisible(true);
-
+        
                 JPanel filePanel = new JPanel();
                 filePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
-
+        
                 JLabel label = new JLabel("Enter new file name: ");
                 JTextField nameEnter = new JTextField(20);
                 Button enter = new Button("Enter");
-                // Makes enter button save to var newFileName and hides window
-                // Changes primary window name
+        
                 enter.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         String newFileName = nameEnter.getText();
                         frame.setTitle("Audio Visualizer - " + newFileName);
                         fileName.setVisible(false);
+        
+                        FileManager fileManager = new FileManager("projects");
+                        boolean created = fileManager.createProjectDirectory(newFileName);
+        
+                        if (created) {
+                            System.out.println("Project created successfully!");
+                        }
                     }
                 });
-
+        
                 filePanel.add(label);
                 filePanel.add(nameEnter);
                 filePanel.add(enter);
-
+        
                 fileName.add(filePanel);
             }
         });
