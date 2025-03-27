@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+
 public class windowMain {
     private JFrame frame;
     private JLabel errorMessageLabel; // Label to display error messages
@@ -68,19 +69,9 @@ public class windowMain {
                         String newFileName = nameEnter.getText();
                         frame.setTitle("Audio Visualizer - " + newFileName);
                         fileName.setVisible(false);
-<<<<<<< HEAD
                         // Hide the main window and open the program window with the new name
                         frame.setVisible(false);
                         new programwindow(newFileName); // Pass the project name to the program window
-=======
-        
-                        FileManager fileManager = new FileManager("projects");
-                        boolean created = fileManager.createProjectDirectory(newFileName);
-        
-                        if (created) {
-                            System.out.println("Project created successfully!");
-                        }
->>>>>>> 2dae1bbdd855546cde3018e52d9441d73201c27e
                     }
                 });
         
