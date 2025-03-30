@@ -16,6 +16,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 
+
 public class windowMain {
     private JFrame frame;
     private JLabel errorMessageLabel; // Label to display error messages
@@ -118,13 +119,9 @@ public class windowMain {
                         String newFileName = nameEnter.getText();
                         frame.setTitle("Audio Visualizer - " + newFileName);
                         fileName.setVisible(false);
-        
-                        FileManager fileManager = new FileManager("projects");
-                        boolean created = fileManager.createProjectDirectory(newFileName);
-        
-                        if (created) {
-                            System.out.println("Project created successfully!");
-                        }
+                        // Hide the main window and open the program window with the new name
+                        frame.setVisible(false);
+                        new programwindow(newFileName); // Pass the project name to the program window
                     }
                 });
         
@@ -137,7 +134,7 @@ public class windowMain {
         });
 
         // Adds file explorer functionality to open file button
-        // Validates file type as .wav
+        // Validates file type as .wav or .mp3
         openExisting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -169,10 +166,13 @@ public class windowMain {
 
                     if (isValidFileType(fileExtension)) {
                         errorMessageLabel.setText(""); // Clear any previous error message
-                        System.out.println("Valid .wav file selected: " + selectedFile.getAbsolutePath());
-                        // Add your logic for processing the selected .wav file
+                        System.out.println("Valid file selected: " + selectedFile.getAbsolutePath());
+                        // Hide the main window and open the program window
+                        frame.setVisible(false);
+                        new programwindow("Current Project"); // Pass a default project name
                     } else {
-                        errorMessageLabel.setText("Invalid file type. Only .wav files are allowed.");
+                        // If invalid file, show the error message and do NOT hide the main window
+                        errorMessageLabel.setText("Invalid file type. Only .wav and .mp3 files are allowed.");
                     }
                 }
             }
@@ -199,9 +199,32 @@ public class windowMain {
         return "";
     }
 
-    // Helper method to check if the file extension is valid (.wav)
+    // Helper method to check if the file extension is valid (.wav or .mp3)
     private static boolean isValidFileType(String fileExtension) {
-        return fileExtension.equals("wav");
+        return fileExtension.equals("wav") || fileExtension.equals("mp3");
+    }
+
+    // Program window class that represents the new frame
+    public class programwindow {
+        public programwindow(String projectName) {
+            JFrame programFrame = new JFrame();
+            programFrame.setTitle("Program Window - " + projectName); // Set the title to the project name
+            programFrame.setSize(800, 600);
+            programFrame.setLocationRelativeTo(null);
+            programFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            programFrame.setVisible(true);
+
+            // Add components to program window as needed
+            JPanel programPanel = new JPanel();
+            programPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            programFrame.add(programPanel);
+
+            JLabel programLabel = new JLabel(projectName);
+            programPanel.add(programLabel);
+        }
+    }
+
+    public static void main(String[] args) {
+        new windowMain(); // Start the main window
     }
 }
-
