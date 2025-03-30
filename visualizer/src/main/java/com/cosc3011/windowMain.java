@@ -12,41 +12,80 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 
 public class windowMain {
     private JFrame frame;
     private JLabel errorMessageLabel; // Label to display error messages
+
+    // Hardcoded colors
+    private Color white = Color.WHITE;
+    private Color black = new Color(43, 43, 43);
+    private Color dark_gray = new Color(60, 63, 65);
+    private Color red = Color.RED;
 
     public windowMain() {
         initialize();
     }
 
     public void initialize() {
+        try {
+            // Set system look and feel first
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            
+            // Override with dark colors
+            UIManager.put("Panel.background", black);
+            UIManager.put("OptionPane.background", black);
+            UIManager.put("TextField.background", dark_gray);
+            UIManager.put("TextField.foreground", white);
+            UIManager.put("TextField.caretForeground", white);
+            UIManager.put("Button.background", dark_gray);
+            UIManager.put("Button.foreground", white);
+            UIManager.put("Label.foreground", white);
+            UIManager.put("FileChooser.background", black);
+            UIManager.put("FileChooser.foreground", white);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         frame = new JFrame();
         this.frame.setLayout(new BorderLayout(0, 0));
         this.frame.setTitle("Audio Visualizer");
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setSize(1000, 800);
         this.frame.setLocationRelativeTo(null);
-        this.frame.setVisible(true);
+        
+
+        // Set dark colors for the frame
+        frame.getContentPane().setBackground(black);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 100));
-        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBackground(black);
 
         Button create = new Button("Create a new project");
+        create.setBackground(dark_gray);
+        create.setForeground(white);
+
         JLabel or = new JLabel("Or");
+        or.setForeground(white);
+
         Button openExisting = new Button("Open an existing project");
+        openExisting.setBackground(dark_gray);
+        openExisting.setForeground(white);
 
 
         errorMessageLabel = new JLabel("");
-        errorMessageLabel.setForeground(Color.RED);
+        errorMessageLabel.setForeground(red);
 
 
         create.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame fileName = new JFrame();
+
                 fileName.setTitle("Create New Project");
                 fileName.setLayout(new BorderLayout(0, 0));
                 fileName.setSize(450, 100);
@@ -54,13 +93,24 @@ public class windowMain {
                 fileName.setAlwaysOnTop(true);
                 fileName.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 fileName.setVisible(true);
+
+                fileName.getContentPane().setBackground(black);
         
                 JPanel filePanel = new JPanel();
                 filePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
+                filePanel.setBackground(black);
         
                 JLabel label = new JLabel("Enter new file name: ");
+                label.setForeground(white);
+
                 JTextField nameEnter = new JTextField(20);
+                nameEnter.setBackground(dark_gray);
+                nameEnter.setForeground(white);
+                nameEnter.setCaretColor(white);
+
                 Button enter = new Button("Enter");
+                enter.setBackground(dark_gray);
+                enter.setForeground(white);
         
                 enter.addActionListener(new ActionListener() {
                     @Override
@@ -91,7 +141,25 @@ public class windowMain {
         openExisting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final JFileChooser chooseFile = new JFileChooser();
+                // Get cwd
+                String cwd = System.getProperty("user.dir");
+
+                // Create file object for this directory
+                File workingDir = new File(cwd);
+
+                // Navigate to 'projects' subdirectory
+                File projectsDir = new File(cwd + File.separator + "projects");
+                if (projectsDir.exists() && projectsDir.isDirectory()) {
+                    workingDir = projectsDir;
+                }
+
+                // Create the file chooser with the working directory
+                final JFileChooser chooseFile = new JFileChooser(workingDir);
+
+                // Apply dark theme styling
+                chooseFile.setBackground(new Color(43, 43, 43));
+                chooseFile.setForeground(Color.WHITE);
+
                 int returnValue = chooseFile.showOpenDialog(openExisting);
 
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -118,6 +186,8 @@ public class windowMain {
         mainPanel.add(or);
         mainPanel.add(openExisting);
         mainPanel.add(errorMessageLabel); // Add the error label to the window
+
+        this.frame.setVisible(true);
     }
 
     // Helper method to get the file extension
