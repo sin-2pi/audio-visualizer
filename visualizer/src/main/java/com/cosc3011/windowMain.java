@@ -1,12 +1,16 @@
-package com.cosc3011;
+package main.java.com.cosc3011;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -208,19 +212,55 @@ public class windowMain {
     public class programwindow {
         public programwindow(String projectName) {
             JFrame programFrame = new JFrame();
-            programFrame.setTitle("Program Window - " + projectName); // Set the title to the project name
-            programFrame.setSize(800, 600);
+            programFrame.setTitle(projectName + " - Audio Visualizer"); // Set the title to the project name
+            programFrame.setSize(1000, 800);
             programFrame.setLocationRelativeTo(null);
             programFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             programFrame.setVisible(true);
 
             // Add components to program window as needed
-            JPanel programPanel = new JPanel();
-            programPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            JPanel programPanel = new JPanel(new BorderLayout(0, 0));
+            JPanel filePanel = new JPanel(new BorderLayout(0, 0));
+            JPanel controlPanel = new JPanel(new GridBagLayout());
+            JPanel displayPanel = new JPanel(new BorderLayout(0, 0));
+            
+            Button fileButton = new Button("File");
+            //Needs proper drop down options
+            fileButton.addActionListener(new ActionListener() {
+            	@Override
+            	public void actionPerformed(ActionEvent e) {
+            		System.out.println("File button clicked.");
+            	}
+            });
+            filePanel.add(fileButton, BorderLayout.LINE_START);
+            
+            GridBagConstraints c = new GridBagConstraints();
+            
+            
+            // Need to change check box button text displayed
+            JCheckBox instrument1 = new JCheckBox("instrument1", true);
+            //c.fill = GridBagConstraints.VERTICAL;
+            c.gridwidth = 1;
+            c.gridx = 0;
+            c.gridy = 0;
+            controlPanel.add(instrument1, c);
+            JCheckBox instrument2 = new JCheckBox("instrument2", true);
+            c.gridx = 0;
+            c.gridy = 1;
+            controlPanel.add(instrument2, c);
+            JCheckBox instrument3 = new JCheckBox("instrument3", true);
+            c.gridx = 0;
+            c.gridy = 2;
+            controlPanel.add(instrument3, c);
+            JCheckBox instrument4 = new JCheckBox("instrument4", true);
+            c.gridx = 0;
+            c.gridy = 3;
+            controlPanel.add(instrument4, c);
+            
+            programPanel.add(filePanel, BorderLayout.PAGE_START);
+            programPanel.add(controlPanel, BorderLayout.LINE_START);
+            programPanel.add(displayPanel, BorderLayout.CENTER);
             programFrame.add(programPanel);
-
-            JLabel programLabel = new JLabel(projectName);
-            programPanel.add(programLabel);
         }
     }
 
