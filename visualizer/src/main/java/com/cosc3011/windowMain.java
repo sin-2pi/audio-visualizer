@@ -20,7 +20,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 
-
 @SuppressWarnings("unused")
 public class windowMain {
     private JFrame frame;
@@ -176,8 +175,8 @@ public class windowMain {
                         frame.setVisible(false);
                         new programwindow("Current Project"); // Pass a default project name
                     } else {
-                        // If invalid file, show the error message and do NOT hide the main window
-                        errorMessageLabel.setText("Invalid file type. Only .wav and .mp3 files are allowed.");
+                        // If invalid file, show the error message in a new window
+                        showErrorWindow("Invalid file type. Only .wav and .mp3 files are allowed.");
                     }
                 }
             }
@@ -209,6 +208,36 @@ public class windowMain {
         return fileExtension.equals("wav") || fileExtension.equals("mp3");
     }
 
+    // Method to show an error window
+    private void showErrorWindow(String message) {
+        JFrame errorFrame = new JFrame("Error");
+        errorFrame.setSize(400, 150);
+        errorFrame.setLocationRelativeTo(frame); // Position the error window relative to the main window
+        errorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        errorFrame.setAlwaysOnTop(true); // Ensure it's always on top
+
+        JPanel panel = new JPanel();
+        panel.setBackground(black);
+        
+        JLabel errorLabel = new JLabel(message);
+        errorLabel.setForeground(red);
+        panel.add(errorLabel);
+        
+        Button closeButton = new Button("Close");
+        closeButton.setBackground(dark_gray);
+        closeButton.setForeground(white);
+        closeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                errorFrame.dispose(); // Close the error window
+            }
+        });
+        
+        panel.add(closeButton);
+        errorFrame.add(panel);
+        errorFrame.setVisible(true);
+    }
+
     // Program window class that represents the new frame
     public class programwindow {
         public programwindow(String projectName) {
@@ -226,7 +255,7 @@ public class windowMain {
             JPanel displayPanel = new JPanel(new BorderLayout(0, 0));
             
             Button fileButton = new Button("File");
-            //Needs proper drop down options
+            // Needs proper drop down options
             fileButton.addActionListener(new ActionListener() {
             	@Override
             	public void actionPerformed(ActionEvent e) {
@@ -237,7 +266,7 @@ public class windowMain {
             
             GridBagConstraints c = new GridBagConstraints();
             
-            //Wind keys percussion
+            // Wind keys percussion
             // Need to change check box button text displayed
             JCheckBox instrument1 = new JCheckBox("Bass", true);
             c.gridwidth = 1;
