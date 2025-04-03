@@ -1,4 +1,4 @@
-package main.java.com.cosc3011;
+package com.cosc3011;
 
 import java.awt.BorderLayout;
 import java.awt.Button;
@@ -21,6 +21,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 
 
+@SuppressWarnings("unused")
 public class windowMain {
     private JFrame frame;
     private JLabel errorMessageLabel; // Label to display error messages
@@ -236,26 +237,33 @@ public class windowMain {
             
             GridBagConstraints c = new GridBagConstraints();
             
-            
+            //Wind keys percussion
             // Need to change check box button text displayed
-            JCheckBox instrument1 = new JCheckBox("instrument1", true);
-            //c.fill = GridBagConstraints.VERTICAL;
+            JCheckBox instrument1 = new JCheckBox("Bass", true);
             c.gridwidth = 1;
             c.gridx = 0;
             c.gridy = 0;
             controlPanel.add(instrument1, c);
-            JCheckBox instrument2 = new JCheckBox("instrument2", true);
+            JCheckBox instrument2 = new JCheckBox("Keys", true);
             c.gridx = 0;
             c.gridy = 1;
             controlPanel.add(instrument2, c);
-            JCheckBox instrument3 = new JCheckBox("instrument3", true);
+            JCheckBox instrument3 = new JCheckBox("Percussion", true);
             c.gridx = 0;
             c.gridy = 2;
             controlPanel.add(instrument3, c);
-            JCheckBox instrument4 = new JCheckBox("instrument4", true);
+            JCheckBox instrument4 = new JCheckBox("String", true);
             c.gridx = 0;
             c.gridy = 3;
             controlPanel.add(instrument4, c);
+            JCheckBox instrument5 = new JCheckBox("Vocals", true);
+            c.gridx = 0;
+            c.gridy = 4;
+            controlPanel.add(instrument5, c);
+            JCheckBox instrument6 = new JCheckBox("Winds", true);
+            c.gridx = 0;
+            c.gridy = 5;
+            controlPanel.add(instrument6, c);
             
             programPanel.add(filePanel, BorderLayout.PAGE_START);
             programPanel.add(controlPanel, BorderLayout.LINE_START);
