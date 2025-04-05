@@ -142,43 +142,7 @@ public class windowMain {
         openExisting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Get cwd
-                String cwd = System.getProperty("user.dir");
-
-                // Create file object for this directory
-                File workingDir = new File(cwd);
-
-                // Navigate to 'projects' subdirectory
-                File projectsDir = new File(cwd + File.separator + "projects");
-                if (projectsDir.exists() && projectsDir.isDirectory()) {
-                    workingDir = projectsDir;
-                }
-
-                // Create the file chooser with the working directory
-                final JFileChooser chooseFile = new JFileChooser(workingDir);
-
-                // Apply dark theme styling
-                chooseFile.setBackground(new Color(43, 43, 43));
-                chooseFile.setForeground(Color.WHITE);
-
-                int returnValue = chooseFile.showOpenDialog(openExisting);
-
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = chooseFile.getSelectedFile();
-                    String fileName = selectedFile.getName();
-                    String fileExtension = getFileExtension(fileName);
-
-                    if (isValidFileType(fileExtension)) {
-                        errorMessageLabel.setText(""); // Clear any previous error message
-                        System.out.println("Valid file selected: " + selectedFile.getAbsolutePath());
-                        // Hide the main window and open the program window
-                        frame.setVisible(false);
-                        new programwindow("Current Project"); // Pass a default project name
-                    } else {
-                        // If invalid file, show the error message in a new window
-                        showErrorWindow("Invalid file type. Only .wav and .mp3 files are allowed.");
-                    }
-                }
+                openFileChooser();
             }
         });
 
@@ -208,6 +172,47 @@ public class windowMain {
         return fileExtension.equals("wav") || fileExtension.equals("mp3");
     }
 
+    // Method to open file chooser dialog
+    private void openFileChooser() {
+        // Get cwd
+        String cwd = System.getProperty("user.dir");
+
+        // Create file object for this directory
+        File workingDir = new File(cwd);
+
+        // Navigate to 'projects' subdirectory
+        File projectsDir = new File(cwd + File.separator + "projects");
+        if (projectsDir.exists() && projectsDir.isDirectory()) {
+            workingDir = projectsDir;
+        }
+
+        // Create the file chooser with the working directory
+        final JFileChooser chooseFile = new JFileChooser(workingDir);
+
+        // Apply dark theme styling
+        chooseFile.setBackground(new Color(43, 43, 43));
+        chooseFile.setForeground(Color.WHITE);
+
+        int returnValue = chooseFile.showOpenDialog(frame);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = chooseFile.getSelectedFile();
+            String fileName = selectedFile.getName();
+            String fileExtension = getFileExtension(fileName);
+
+            if (isValidFileType(fileExtension)) {
+                errorMessageLabel.setText(""); // Clear any previous error message
+                System.out.println("Valid file selected: " + selectedFile.getAbsolutePath());
+                // Hide the main window and open the program window
+                frame.setVisible(false);
+                new programwindow("Current Project"); // Pass a default project name
+            } else {
+                // If invalid file, show the error message in a new window
+                showErrorWindow("Invalid file type. Only .wav and .mp3 files are allowed.");
+            }
+        }
+    }
+
     // Method to show an error window
     private void showErrorWindow(String message) {
         JFrame errorFrame = new JFrame("Error");
@@ -223,17 +228,18 @@ public class windowMain {
         errorLabel.setForeground(red);
         panel.add(errorLabel);
         
-        Button closeButton = new Button("Close");
-        closeButton.setBackground(dark_gray);
-        closeButton.setForeground(white);
-        closeButton.addActionListener(new ActionListener() {
+        Button okButton = new Button("OK");
+        okButton.setBackground(dark_gray);
+        okButton.setForeground(white);
+        okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 errorFrame.dispose(); // Close the error window
+                openFileChooser(); // Reopen the file chooser dialog
             }
         });
         
-        panel.add(closeButton);
+        panel.add(okButton);
         errorFrame.add(panel);
         errorFrame.setVisible(true);
     }
