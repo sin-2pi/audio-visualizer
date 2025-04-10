@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
 
 
 @SuppressWarnings("unused")
@@ -142,7 +144,43 @@ public class windowMain {
         openExisting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openFileChooser();
+                // Get cwd
+                String cwd = System.getProperty("user.dir");
+
+                // Create file object for this directory
+                File workingDir = new File(cwd);
+
+                // Navigate to 'projects' subdirectory
+                File projectsDir = new File(cwd + File.separator + "projects");
+                if (projectsDir.exists() && projectsDir.isDirectory()) {
+                    workingDir = projectsDir;
+                }
+
+                // Create the file chooser with the working directory
+                final JFileChooser chooseFile = new JFileChooser(workingDir);
+
+                // Apply dark theme styling
+                chooseFile.setBackground(new Color(43, 43, 43));
+                chooseFile.setForeground(Color.WHITE);
+
+                int returnValue = chooseFile.showOpenDialog(openExisting);
+
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = chooseFile.getSelectedFile();
+                    String fileName = selectedFile.getName();
+                    String fileExtension = getFileExtension(fileName);
+
+                    if (isValidFileType(fileExtension)) {
+                        errorMessageLabel.setText(""); // Clear any previous error message
+                        System.out.println("Valid file selected: " + selectedFile.getAbsolutePath());
+                        // Hide the main window and open the program window
+                        frame.setVisible(false);
+                        new programwindow("Current Project"); // Pass a default project name
+                    } else {
+                        // If invalid file, show the error message and do NOT hide the main window
+                        errorMessageLabel.setText("Invalid file type. Only .wav and .mp3 files are allowed.");
+                    }
+                }
             }
         });
 
@@ -172,78 +210,6 @@ public class windowMain {
         return fileExtension.equals("wav") || fileExtension.equals("mp3");
     }
 
-    // Method to open file chooser dialog
-    private void openFileChooser() {
-        // Get cwd
-        String cwd = System.getProperty("user.dir");
-
-        // Create file object for this directory
-        File workingDir = new File(cwd);
-
-        // Navigate to 'projects' subdirectory
-        File projectsDir = new File(cwd + File.separator + "projects");
-        if (projectsDir.exists() && projectsDir.isDirectory()) {
-            workingDir = projectsDir;
-        }
-
-        // Create the file chooser with the working directory
-        final JFileChooser chooseFile = new JFileChooser(workingDir);
-
-        // Apply dark theme styling
-        chooseFile.setBackground(new Color(43, 43, 43));
-        chooseFile.setForeground(Color.WHITE);
-
-        int returnValue = chooseFile.showOpenDialog(frame);
-
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = chooseFile.getSelectedFile();
-            String fileName = selectedFile.getName();
-            String fileExtension = getFileExtension(fileName);
-
-            if (isValidFileType(fileExtension)) {
-                errorMessageLabel.setText(""); // Clear any previous error message
-                System.out.println("Valid file selected: " + selectedFile.getAbsolutePath());
-                // Hide the main window and open the program window
-                frame.setVisible(false);
-                new programwindow("Current Project"); // Pass a default project name
-            } else {
-                // If invalid file, show the error message in a new window
-                showErrorWindow("Invalid file type. Only .wav and .mp3 files are allowed.");
-            }
-        }
-    }
-
-    // Method to show an error window
-    private void showErrorWindow(String message) {
-        JFrame errorFrame = new JFrame("Error");
-        errorFrame.setSize(400, 150);
-        errorFrame.setLocationRelativeTo(frame); // Position the error window relative to the main window
-        errorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        errorFrame.setAlwaysOnTop(true); // Ensure it's always on top
-
-        JPanel panel = new JPanel();
-        panel.setBackground(black);
-        
-        JLabel errorLabel = new JLabel(message);
-        errorLabel.setForeground(red);
-        panel.add(errorLabel);
-        
-        Button okButton = new Button("OK");
-        okButton.setBackground(dark_gray);
-        okButton.setForeground(white);
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                errorFrame.dispose(); // Close the error window
-                openFileChooser(); // Reopen the file chooser dialog
-            }
-        });
-        
-        panel.add(okButton);
-        errorFrame.add(panel);
-        errorFrame.setVisible(true);
-    }
-
     // Program window class that represents the new frame
     public class programwindow {
         public programwindow(String projectName) {
@@ -261,7 +227,7 @@ public class windowMain {
             JPanel displayPanel = new JPanel(new BorderLayout(0, 0));
             
             Button fileButton = new Button("File");
-            // Needs proper drop down options
+            //Needs proper drop down options
             fileButton.addActionListener(new ActionListener() {
             	@Override
             	public void actionPerformed(ActionEvent e) {
@@ -271,33 +237,29 @@ public class windowMain {
             filePanel.add(fileButton, BorderLayout.LINE_START);
             
             GridBagConstraints c = new GridBagConstraints();
+            Insets ins = new Insets(25, 50, 25, 25);
+            c.insets = ins;
             
-            // Wind keys percussion
-            // Need to change check box button text displayed
             JCheckBox instrument1 = new JCheckBox("Bass", true);
             c.gridwidth = 1;
             c.gridx = 0;
             c.gridy = 0;
             controlPanel.add(instrument1, c);
-            JCheckBox instrument2 = new JCheckBox("Keys", true);
-            c.gridx = 0;
             c.gridy = 1;
+            JCheckBox instrument2 = new JCheckBox("Keys", true);
+            c.gridy = 2;
             controlPanel.add(instrument2, c);
             JCheckBox instrument3 = new JCheckBox("Percussion", true);
-            c.gridx = 0;
-            c.gridy = 2;
+            c.gridy = 3;
             controlPanel.add(instrument3, c);
             JCheckBox instrument4 = new JCheckBox("String", true);
-            c.gridx = 0;
-            c.gridy = 3;
+            c.gridy = 4;
             controlPanel.add(instrument4, c);
             JCheckBox instrument5 = new JCheckBox("Vocals", true);
-            c.gridx = 0;
-            c.gridy = 4;
+            c.gridy = 5;
             controlPanel.add(instrument5, c);
             JCheckBox instrument6 = new JCheckBox("Winds", true);
-            c.gridx = 0;
-            c.gridy = 5;
+            c.gridy = 6;
             controlPanel.add(instrument6, c);
             
             programPanel.add(filePanel, BorderLayout.PAGE_START);
