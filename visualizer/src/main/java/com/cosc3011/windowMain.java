@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
 
 
 
@@ -35,18 +37,20 @@ public class windowMain {
         try {
             // Set system look and feel first
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            
-            // Override with dark colors
-            UIManager.put("Panel.background", black);
-            UIManager.put("OptionPane.background", black);
-            UIManager.put("TextField.background", dark_gray);
-            UIManager.put("TextField.foreground", white);
-            UIManager.put("TextField.caretForeground", white);
-            UIManager.put("Button.background", dark_gray);
-            UIManager.put("Button.foreground", white);
-            UIManager.put("Label.foreground", white);
-            UIManager.put("FileChooser.background", black);
-            UIManager.put("FileChooser.foreground", white);
+
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+
+                    UIManager.put("control", new Color(50, 50, 50));
+                    UIManager.put("text", white);
+                    UIManager.put("nimbusBase", new Color(18, 30, 49));
+                    UIManager.put("nimbusBlueGrey", new Color(40, 40, 40));
+                    UIManager.put("nimbusLightBackground", new Color(60, 63, 65));
+
+                    break;
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,11 +121,41 @@ public class windowMain {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         String newFileName = nameEnter.getText();
-                        frame.setTitle("Audio Visualizer - " + newFileName);
-                        fileName.setVisible(false);
-                        // Hide the main window and open the program window with the new name
-                        frame.setVisible(false);
-                        new programwindow(newFileName); // Pass the project name to the program window
+                        
+                        // Check if the project name is not empty
+                        if (newFileName.trim().isEmpty()) {
+                            JLabel errorLabel = new JLabel("Project name cannot be empty!");
+                            errorLabel.setForeground(red);
+                            filePanel.add(errorLabel);
+                            filePanel.revalidate();
+                            return;
+                        }
+                        
+                        // Create the projects directory if it doesn't exist
+                        File projectsDir = new File("projects");
+                        if (!projectsDir.exists()) {
+                            projectsDir.mkdirs();
+                        }
+                        
+                        // Create the project directory
+                        FileManager fileManager = new FileManager("projects");
+                        boolean created = fileManager.createProjectDirectory(newFileName);
+                        
+                        if (created) {
+                            System.out.println("Project directory created successfully!");
+                            frame.setTitle("Audio Visualizer - " + newFileName);
+                            fileName.setVisible(false);
+                            
+                            // Hide the main window and open the program window with the new name
+                            frame.setVisible(false);
+                            new programwindow(newFileName); // Pass the project name to the program window
+                        } else {
+                            // Project creation failed or already exists
+                            JLabel errorLabel = new JLabel("Project already exists or couldn't be created!");
+                            errorLabel.setForeground(red);
+                            filePanel.add(errorLabel);
+                            filePanel.revalidate();
+                        }
                     }
                 });
         
@@ -138,6 +172,11 @@ public class windowMain {
         openExisting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                LookAndFeel currentLF = UIManager.getLookAndFeel();
+
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
                 // Get cwd
                 String cwd = System.getProperty("user.dir");
 
@@ -154,8 +193,8 @@ public class windowMain {
                 final JFileChooser chooseFile = new JFileChooser(workingDir);
 
                 // Apply dark theme styling
-                chooseFile.setBackground(new Color(43, 43, 43));
-                chooseFile.setForeground(Color.WHITE);
+                // chooseFile.setBackground(new Color(43, 43, 43));
+                // chooseFile.setForeground(Color.WHITE);
 
                 int returnValue = chooseFile.showOpenDialog(openExisting);
 
@@ -175,7 +214,13 @@ public class windowMain {
                         errorMessageLabel.setText("Invalid file type. Only .wav and .mp3 files are allowed.");
                     }
                 }
+
+                UIManager.setLookAndFeel(currentLF);
+                SwingUtilities.updateComponentTreeUI(frame);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
+        }
         });
 
         // Add panel to frame
@@ -205,22 +250,43 @@ public class windowMain {
     }
 
     // Program window class that represents the new frame
-    public class programwindow {
+    public static class programwindow {
         public programwindow(String projectName) {
             JFrame programFrame = new JFrame();
-            programFrame.setTitle("Program Window - " + projectName); // Set the title to the project name
+            programFrame.setTitle("Audio Visualizer - " + projectName);
             programFrame.setSize(800, 600);
             programFrame.setLocationRelativeTo(null);
             programFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            programFrame.setVisible(true);
-
-            // Add components to program window as needed
-            JPanel programPanel = new JPanel();
-            programPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            
+            // Apply the same dark theme
+            programFrame.getContentPane().setBackground(new Color(43, 43, 43));
+            
+            // Create a panel with BorderLayout
+            JPanel programPanel = new JPanel(new BorderLayout());
+            programPanel.setBackground(new Color(43, 43, 43));
             programFrame.add(programPanel);
-
-            JLabel programLabel = new JLabel(projectName);
-            programPanel.add(programLabel);
+            
+            // Add a header panel
+            JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            headerPanel.setBackground(new Color(60, 63, 65));
+            
+            // Project name label
+            JLabel projectLabel = new JLabel("Project: " + projectName);
+            projectLabel.setForeground(Color.WHITE);
+            headerPanel.add(projectLabel);
+            
+            // Add some placeholder content
+            JPanel contentPanel = new JPanel();
+            contentPanel.setBackground(new Color(43, 43, 43));
+            JLabel placeholderLabel = new JLabel("Audio visualization");
+            placeholderLabel.setForeground(Color.WHITE);
+            contentPanel.add(placeholderLabel);
+            
+            // Add panels to the main panel
+            programPanel.add(headerPanel, BorderLayout.NORTH);
+            programPanel.add(contentPanel, BorderLayout.CENTER);
+            
+            programFrame.setVisible(true);
         }
     }
 
