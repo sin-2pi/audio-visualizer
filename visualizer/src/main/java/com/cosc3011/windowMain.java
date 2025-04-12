@@ -6,11 +6,13 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Insets;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -18,15 +20,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 
 @SuppressWarnings("unused")
 public class windowMain {
     private JFrame frame;
-    private JLabel errorMessageLabel; // Label to display error messages
+    private JLabel errorMessageLabel;
 
-    // Hardcoded colors
     private Color white = Color.WHITE;
     private Color black = new Color(43, 43, 43);
     private Color dark_gray = new Color(60, 63, 65);
@@ -38,10 +37,7 @@ public class windowMain {
 
     public void initialize() {
         try {
-            // Set system look and feel first
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            
-            // Override with dark colors
             UIManager.put("Panel.background", black);
             UIManager.put("OptionPane.background", black);
             UIManager.put("TextField.background", dark_gray);
@@ -55,21 +51,32 @@ public class windowMain {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         frame = new JFrame();
         this.frame.setLayout(new BorderLayout(0, 0));
         this.frame.setTitle("Audio Visualizer");
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setSize(1000, 800);
         this.frame.setLocationRelativeTo(null);
-        
-
-        // Set dark colors for the frame
         frame.getContentPane().setBackground(black);
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 100));
-        mainPanel.setBackground(black);
+        // Title Label at the top
+        JLabel titleLabel = new JLabel("Audio Visualizer");
+        titleLabel.setForeground(white);
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        titleLabel.setFont(titleLabel.getFont().deriveFont(24.0f));
+        frame.add(titleLabel, BorderLayout.NORTH);
+
+        // Blank Image in the center
+        BufferedImage blankImage = new BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB);
+        ImageIcon blankIcon = new ImageIcon(blankImage);
+        JLabel imageLabel = new JLabel(blankIcon);
+        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+        frame.add(imageLabel, BorderLayout.CENTER);
+
+        // Bottom Panel for buttons
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 30));
+        bottomPanel.setBackground(black);
 
         Button create = new Button("Create a new project");
         create.setBackground(dark_gray);
@@ -82,10 +89,15 @@ public class windowMain {
         openExisting.setBackground(dark_gray);
         openExisting.setForeground(white);
 
-
         errorMessageLabel = new JLabel("");
         errorMessageLabel.setForeground(red);
 
+        bottomPanel.add(create);
+        bottomPanel.add(or);
+        bottomPanel.add(openExisting);
+        bottomPanel.add(errorMessageLabel);
+
+        frame.add(bottomPanel, BorderLayout.SOUTH);
 
         create.addActionListener(new ActionListener() {
             @Override
@@ -101,11 +113,11 @@ public class windowMain {
                 fileName.setVisible(true);
 
                 fileName.getContentPane().setBackground(black);
-        
+
                 JPanel filePanel = new JPanel();
                 filePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 1, 1));
                 filePanel.setBackground(black);
-        
+
                 JLabel label = new JLabel("Enter new file name: ");
                 label.setForeground(white);
 
@@ -117,29 +129,25 @@ public class windowMain {
                 Button enter = new Button("Enter");
                 enter.setBackground(dark_gray);
                 enter.setForeground(white);
-        
+
                 enter.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         String newFileName = nameEnter.getText();
                         frame.setTitle("Audio Visualizer - " + newFileName);
                         fileName.setVisible(false);
-                        // Hide the main window and open the program window with the new name
                         frame.setVisible(false);
-                        new programwindow(newFileName); // Pass the project name to the program window
+                        new programwindow(newFileName);
                     }
                 });
-        
+
                 filePanel.add(label);
                 filePanel.add(nameEnter);
                 filePanel.add(enter);
-        
                 fileName.add(filePanel);
             }
         });
 
-        // Adds file explorer functionality to open file button
-        // Validates file type as .wav or .mp3
         openExisting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -147,19 +155,9 @@ public class windowMain {
             }
         });
 
-        // Add panel to frame
-        frame.add(mainPanel, BorderLayout.CENTER);
-
-        // Add buttons to panel
-        mainPanel.add(create);
-        mainPanel.add(or);
-        mainPanel.add(openExisting);
-        mainPanel.add(errorMessageLabel); // Add the error label to the window
-
         this.frame.setVisible(true);
     }
 
-    // Helper method to get the file extension
     private static String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
         if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
@@ -168,29 +166,19 @@ public class windowMain {
         return "";
     }
 
-    // Helper method to check if the file extension is valid (.wav or .mp3)
     private static boolean isValidFileType(String fileExtension) {
         return fileExtension.equals("wav") || fileExtension.equals("mp3");
     }
 
-    // Method to open file chooser dialog
     private void openFileChooser() {
-        // Get cwd
         String cwd = System.getProperty("user.dir");
-
-        // Create file object for this directory
         File workingDir = new File(cwd);
-
-        // Navigate to 'projects' subdirectory
         File projectsDir = new File(cwd + File.separator + "projects");
         if (projectsDir.exists() && projectsDir.isDirectory()) {
             workingDir = projectsDir;
         }
 
-        // Create the file chooser with the working directory
         final JFileChooser chooseFile = new JFileChooser(workingDir);
-
-        // Apply dark theme styling
         chooseFile.setBackground(new Color(43, 43, 43));
         chooseFile.setForeground(Color.WHITE);
 
@@ -202,98 +190,91 @@ public class windowMain {
             String fileExtension = getFileExtension(fileName);
 
             if (isValidFileType(fileExtension)) {
-                errorMessageLabel.setText(""); // Clear any previous error message
+                errorMessageLabel.setText("");
                 System.out.println("Valid file selected: " + selectedFile.getAbsolutePath());
-                // Hide the main window and open the program window
                 frame.setVisible(false);
-                new programwindow("Current Project"); // Pass a default project name
+                new programwindow("Current Project");
             } else {
-                // If invalid file, show the error message in a new window
                 showErrorWindow("Invalid file type. Only .wav and .mp3 files are allowed.");
             }
         }
     }
 
-    // Method to show an error window
     private void showErrorWindow(String message) {
         JFrame errorFrame = new JFrame("Error");
         errorFrame.setSize(400, 150);
-        errorFrame.setLocationRelativeTo(frame); // Position the error window relative to the main window
+        errorFrame.setLocationRelativeTo(frame);
         errorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        errorFrame.setAlwaysOnTop(true); // Ensure it's always on top
+        errorFrame.setAlwaysOnTop(true);
 
         JPanel panel = new JPanel();
         panel.setBackground(black);
-        
+
         JLabel errorLabel = new JLabel(message);
         errorLabel.setForeground(red);
         panel.add(errorLabel);
-        
+
         Button okButton = new Button("OK");
         okButton.setBackground(dark_gray);
         okButton.setForeground(white);
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                errorFrame.dispose(); // Close the error window
-                openFileChooser(); // Reopen the file chooser dialog
+                errorFrame.dispose();
+                openFileChooser();
             }
         });
-        
+
         panel.add(okButton);
         errorFrame.add(panel);
         errorFrame.setVisible(true);
     }
 
-    // Program window class that represents the new frame
-public class programwindow {
+    public class programwindow {
         public programwindow(String projectName) {
             JFrame programFrame = new JFrame();
-            programFrame.setTitle(projectName + " - Audio Visualizer"); // Set the title to the project name
+            programFrame.setTitle(projectName + " - Audio Visualizer");
             programFrame.setSize(1000, 800);
             programFrame.setLocationRelativeTo(null);
             programFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             programFrame.setVisible(true);
 
-            // Add components to program window as needed
             JPanel programPanel = new JPanel(new BorderLayout(0, 0));
             JPanel controlPanel = new JPanel(new GridBagLayout());
             JPanel displayPanel = new JPanel(new BorderLayout(0, 0));
-            
+
             GridBagConstraints c = new GridBagConstraints();
             Insets ins = new Insets(25, 50, 25, 25);
             c.insets = ins;
-            
-            JCheckBox instrument1 = new JCheckBox("Bass", true);
-            c.gridwidth = 1;
             c.gridx = 0;
+
+            JCheckBox instrument1 = new JCheckBox("Bass", true);
             c.gridy = 0;
             controlPanel.add(instrument1, c);
-            c.gridy = 1;
             JCheckBox instrument2 = new JCheckBox("Keys", true);
-            c.gridy = 2;
+            c.gridy = 1;
             controlPanel.add(instrument2, c);
             JCheckBox instrument3 = new JCheckBox("Percussion", true);
-            c.gridy = 3;
+            c.gridy = 2;
             controlPanel.add(instrument3, c);
             JCheckBox instrument4 = new JCheckBox("String", true);
-            c.gridy = 4;
+            c.gridy = 3;
             controlPanel.add(instrument4, c);
             JCheckBox instrument5 = new JCheckBox("Vocals", true);
-            c.gridy = 5;
+            c.gridy = 4;
             controlPanel.add(instrument5, c);
             JCheckBox instrument6 = new JCheckBox("Winds", true);
-            c.gridy = 6;
+            c.gridy = 5;
             controlPanel.add(instrument6, c);
-            
+
             programPanel.add(controlPanel, BorderLayout.LINE_START);
             programPanel.add(displayPanel, BorderLayout.CENTER);
             programFrame.add(programPanel);
-            programFrame.setJMenuBar(new topMenu().menuBar); // Add the menu bar to the program window
+            programFrame.setJMenuBar(new topMenu().menuBar);
         }
     }
 
     public static void main(String[] args) {
-        new windowMain(); // Start the main window
+        new windowMain();
     }
 }
