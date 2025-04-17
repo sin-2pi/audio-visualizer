@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -23,6 +24,7 @@ import com.madgag.gif.fmsware.*;;
 
 public class GifCapture {
     private ArrayList<BufferedImage> frames;
+    private volatile boolean started = false;
     private volatile boolean recording = true;
     private AnimatedGifEncoder encoder;
     private String filePath;
@@ -46,6 +48,7 @@ public class GifCapture {
     }
 
     public void startCapture(JFrame window) throws InterruptedException {
+        started = true;
         new Thread(() -> {
             while (recording) {
                 captureFrame(window);
@@ -62,8 +65,16 @@ public class GifCapture {
        }).start();
     }
 
-    public void stopCapture() {
-        recording = false;
+    public boolean stopCapture() {
+        if (!started) {
+            int result = JOptionPane.showConfirmDialog(null,
+                    "Recording not yet started",
+                    "Error", JOptionPane.DEFAULT_OPTION);
+            return false;
+        } else {
+            recording = false;
+            return true;
+        }
     }
 
     public void captureFrame(JFrame window) {
@@ -81,6 +92,15 @@ public class GifCapture {
 
     public void updatePath(String newPath) {
         filePath = newPath;
+    }
+
+    public void updateFPS(int fps) {
+        frameRate = fps;
+        delay = 1000 / fps;
+    }
+
+    public int getFPS() {
+        return frameRate;
     }
 
     /*
