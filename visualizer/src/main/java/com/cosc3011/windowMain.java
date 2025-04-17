@@ -231,8 +231,9 @@ public class windowMain {
     }
 
     public class programwindow {
+        private static JFrame programFrame;
         public programwindow(String projectName) {
-            JFrame programFrame = new JFrame();
+            programFrame = new JFrame();
             programFrame.setTitle(projectName + " - Audio Visualizer");
             programFrame.setSize(1000, 800);
             programFrame.setLocationRelativeTo(null);
@@ -271,6 +272,10 @@ public class windowMain {
             programPanel.add(displayPanel, BorderLayout.CENTER);
             programFrame.add(programPanel);
             programFrame.setJMenuBar(new topMenu().menuBar);
+        }
+
+        public static JFrame getFrame() {
+            return programFrame;
         }
     }
 

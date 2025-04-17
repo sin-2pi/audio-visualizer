@@ -8,5 +8,6 @@ public class topMenu {
         // Create the menu bar and add it to the frame
         menuBar.add(new FileMenu());
         menuBar.add(new SettingsMenu());
+        menuBar.add(new recordingMenu());
     }
 }

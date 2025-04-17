@@ -2,67 +2,68 @@ package com.cosc3011;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import com.madgag.gif.fmsware.*;;
 
-/*
- * USAGE:
- * 
- * GifCapture variable_name = new GifCapture(frame_count, "Save/Path/name.gif");
-    try {
-        gif.startCapture(frame);
-    } catch (InterruptedException e) {
-        e.printStackTrace();
-    }
-
-    still working on the frames per second
- */
+/* 
+    USAGE:
+    GifCapture name = new GifCapture()
+    name.updatePath() changes where the gif is saved
+    name.startCapture() starts capturing frames continuously
+    name.stopCapture() stops frame capture and starts the encoding process
+*/
 
 public class GifCapture {
     private ArrayList<BufferedImage> frames;
-    private CountDownLatch captureSync;
-    private AnimatedGifEncoder encoder = new AnimatedGifEncoder();
+    private volatile boolean recording = true;
+    private AnimatedGifEncoder encoder;
     private String filePath;
+    private int delay;
+    public int frameRate = 30; // set to 30 fps by default
 
-    public GifCapture(int frameCount, String filePath) {
+    public GifCapture() {
+        delay = 1000 / frameRate; // ms between frames
         frames = new ArrayList<>();
-        captureSync = new CountDownLatch(frameCount);
-        this.filePath = filePath;
+        encoder = new AnimatedGifEncoder();
+        filePath = "temp.gif";
     }
 
     public void encodeGif() {
         encoder.start(filePath);
-        encoder.setDelay(10);
+        encoder.setDelay(delay);
         for (BufferedImage frame : frames) {
             encoder.addFrame(frame);
         }
         encoder.finish();
-        System.out.println("Gif successfully encoded");
     }
 
     public void startCapture(JFrame window) throws InterruptedException {
-        // capture frames until it reaches the frame count
-        Timer timer = new Timer(10, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (captureSync.getCount() != 0) {
-                    captureFrame(window);
-                    captureSync.countDown();
-                } else {
-                    encodeGif();
-                    ((Timer)e.getSource()).stop();
+        new Thread(() -> {
+            while (recording) {
+                captureFrame(window);
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    System.err.println("Thread sleep failure");
+                    return;
                 }
             }
-        });
-        timer.start();
+            encodeGif();
+            return;
+       }).start();
+    }
+
+    public void stopCapture() {
+        recording = false;
     }
 
     public void captureFrame(JFrame window) {
@@ -75,15 +76,18 @@ public class GifCapture {
             } finally {
                 g.dispose();
             }
-            captureSync.countDown();
         });
+    }
+
+    public void updatePath(String newPath) {
+        filePath = newPath;
     }
 
     /*
      SEPERATE TESTING CODE
      DO NOT MODIFY
      MOVING RED SQUARE - from stackoverflow
-
+    */
     private static final JPanel square = new JPanel();
     private static int x = 20;
 
@@ -101,12 +105,21 @@ public class GifCapture {
         timer.start();
         frame.setVisible(true);
         
-        GifCapture gif = new GifCapture(300, "test.gif");
+        GifCapture gif = new GifCapture();
         try {
             gif.startCapture(frame);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        // allows the recording to capture 3 seconds worth of frames
+        Timer stop = new Timer(3000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              gif.stopCapture();
+            }
+          });
+          stop.start();
     }
 
     public static class MyActionListener implements ActionListener{
@@ -124,5 +137,4 @@ public class GifCapture {
             }
         });
     }
-    */
 }
