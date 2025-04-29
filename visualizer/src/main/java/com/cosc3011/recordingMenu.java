@@ -8,9 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.awt.*;
 import java.io.File;
 
-
-
+// class for the recording drop down menu
 public class recordingMenu extends JMenu {
+    // initialize gifcapture item and filepath information
     GifCapture recording = new GifCapture();
     Path currentDir = Paths.get("").toAbsolutePath();
     String filePathString = currentDir.toString();
@@ -18,23 +18,26 @@ public class recordingMenu extends JMenu {
     public recordingMenu() {
         super("Recording");
 
-        // Add menu items
+        // menu items
         JMenuItem startItem = new JMenuItem("Start");
         JMenuItem stopItem = new JMenuItem("Stop");
         JMenuItem settingsItem = new JMenuItem("Settings");
 
-        // Add action listeners to menu items
+        // start capture button
         startItem.addActionListener(e -> {
+            // attempt to create save folder
             if (!createSaveFolder(savePath)) {
                 int result = JOptionPane.showConfirmDialog(null,
                     "Failed to create a save filepath",
                     "Exit Program", JOptionPane.DEFAULT_OPTION);
                 if (result == 0) System.exit(0);
             }
+            // create gif name with formatted timestamp
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
             String formattedDateTime = now.format(formatter);
             String finalPath = savePath + formattedDateTime + ".gif";
+            // start recording
             recording.updatePath(finalPath);
             try {
                 // frame is not correctly capturing right now so there is nothing to encode
@@ -44,7 +47,8 @@ public class recordingMenu extends JMenu {
                 System.out.println("Gif recording failed!");
             }
         });
-
+        // stop capture button
+        // displays window with save path and filename
         stopItem.addActionListener(e -> {
             if (recording.stopCapture()) {
                 String message = "Visualization successfully saved to: " + savePath;
@@ -55,10 +59,10 @@ public class recordingMenu extends JMenu {
                 jd.setVisible(true);
             }
         });
-
+        // calls recording settings menu function to display the pop up
         settingsItem.addActionListener(e -> recordingSettingsMenu());
 
-        // Add the menu items to Settings menu
+        // add menu items to the drop down
         add(startItem);
         add(stopItem);
         add(settingsItem);
@@ -80,6 +84,7 @@ public class recordingMenu extends JMenu {
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             // update values in gif capture
+            // path updating
             String newPath = field2.getText();
             if (!createSaveFolder(newPath)) {
                 int result2 = JOptionPane.showConfirmDialog(null,
@@ -88,6 +93,7 @@ public class recordingMenu extends JMenu {
             } else {
                 savePath = newPath;
             }
+            // fps updating
             int newFPS = Integer.parseInt(field1.getText());
             if (newFPS < 10 || newFPS > 60) {
                 int result3 = JOptionPane.showConfirmDialog(null,
@@ -102,6 +108,8 @@ public class recordingMenu extends JMenu {
         }
     }
 
+    // attempts to create save folder
+    // returns false on failure and true when successful
     private boolean createSaveFolder(String path) {
         String filePath = path + "tmp.txt";
 

@@ -20,6 +20,12 @@ import com.madgag.gif.fmsware.*;;
     name.updatePath() changes where the gif is saved
     name.startCapture() starts capturing frames continuously
     name.stopCapture() stops frame capture and starts the encoding process
+
+    try {
+        gif.startCapture(frame);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
 */
 
 public class GifCapture {
@@ -31,6 +37,7 @@ public class GifCapture {
     private int delay;
     public int frameRate = 30; // set to 30 fps by default
 
+    // constructor
     public GifCapture() {
         delay = 1000 / frameRate; // ms between frames
         frames = new ArrayList<>();
@@ -38,6 +45,9 @@ public class GifCapture {
         filePath = "temp.gif";
     }
 
+    // encode function
+    // uses external gif encoding library created by other authors
+    // com.madgag.gif.fmsware package
     public void encodeGif() {
         encoder.start(filePath);
         encoder.setDelay(delay);
@@ -47,6 +57,8 @@ public class GifCapture {
         encoder.finish();
     }
 
+    // start capture function
+    // launches a new thread that captures frames with a given delay between each
     public void startCapture(JFrame window) throws InterruptedException {
         started = true;
         new Thread(() -> {
@@ -65,6 +77,9 @@ public class GifCapture {
        }).start();
     }
 
+    // stop capture function
+    // returns true if stop was successful
+    // returns false when recording is not already started
     public boolean stopCapture() {
         if (!started) {
             int result = JOptionPane.showConfirmDialog(null,
@@ -77,6 +92,9 @@ public class GifCapture {
         }
     }
 
+    // capture frame function
+    // captures buffered image of jframe and adds to arraylist of frames for later
+    // uses swing's invokeLater function for safe asynchronous execution
     public void captureFrame(JFrame window) {
         SwingUtilities.invokeLater(() -> {
             BufferedImage frame = new BufferedImage(window.getWidth(), window.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -90,15 +108,18 @@ public class GifCapture {
         });
     }
 
+    // function to update the filepath
     public void updatePath(String newPath) {
         filePath = newPath;
     }
 
+    // function to update the fps for encoding
     public void updateFPS(int fps) {
         frameRate = fps;
         delay = 1000 / fps;
     }
 
+    // function to get the current fps value
     public int getFPS() {
         return frameRate;
     }
@@ -125,6 +146,7 @@ public class GifCapture {
         timer.start();
         frame.setVisible(true);
         
+        // this class being used
         GifCapture gif = new GifCapture();
         try {
             gif.startCapture(frame);
@@ -133,6 +155,7 @@ public class GifCapture {
         }
 
         // allows the recording to capture 3 seconds worth of frames
+        // then stops the capture
         Timer stop = new Timer(3000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
