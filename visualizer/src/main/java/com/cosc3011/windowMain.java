@@ -195,7 +195,9 @@ public class windowMain {
 
             errorMessageLabel.setText("");
             frame.setVisible(false);
-            fm = new FileManager(selectedFile.getAbsolutePath());
+            String filePath = selectedFile.getAbsolutePath() + "/";
+            System.out.println(filePath);
+            fm = new FileManager(filePath);
             new programwindow(selectedFile.getName());
         }
     }

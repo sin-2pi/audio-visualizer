@@ -8,6 +8,7 @@ public class FileManager {
 
     public FileManager(String baseDirectory) {
         this.baseDirectory = baseDirectory;
+        this.projectDir = baseDirectory;
     }
 
     public boolean createProjectDirectory(String projectName) {

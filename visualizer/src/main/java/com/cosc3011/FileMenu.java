@@ -28,7 +28,7 @@ public class FileMenu extends JMenu {
             String fileName = selectedFile.getName();
             String fileExtension = getFileExtension(fileName);
             while (!isValidFileType(fileExtension) && !selectedFile.isDirectory()) {
-                int result3 = JOptionPane.showConfirmDialog(null,
+                int result = JOptionPane.showConfirmDialog(null,
                     "Invalid file type. Only .wav files are allowed.",
                     "Error", JOptionPane.DEFAULT_OPTION);
                 selectedFile = openFileChooser(frame);
@@ -37,6 +37,9 @@ public class FileMenu extends JMenu {
             }
             if (!selectedFile.isDirectory()) {
                 audioFile = selectedFile.getAbsolutePath();
+                String message = "File " + fileName + " was successfully opened!";
+                int result = JOptionPane.showConfirmDialog(null,
+                    message, "Success", JOptionPane.DEFAULT_OPTION);
             }
         });
         saveItem.addActionListener(e -> System.out.println("File saved"));
