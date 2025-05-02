@@ -1,3 +1,6 @@
+# I'm leaving this script because Im assuming that Tyson used it for compiling
+# some of the paths would have to be modified for its use again
+
 #!/usr/bin/env bash
 set -euo pipefail
 
