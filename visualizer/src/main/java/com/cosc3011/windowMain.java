@@ -11,12 +11,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -30,6 +33,8 @@ public class windowMain {
     private Color black = new Color(43, 43, 43);
     private Color dark_gray = new Color(60, 63, 65);
     private Color red = Color.RED;
+
+    private FileManager fm;
 
     public windowMain() {
         initialize();
@@ -137,6 +142,17 @@ public class windowMain {
                         frame.setTitle("Audio Visualizer - " + newFileName);
                         fileName.setVisible(false);
                         frame.setVisible(false);
+                        // get current directory to pass to file manager
+                        Path currentDir = Paths.get("").toAbsolutePath();
+                        String filePathString = currentDir.toString();
+                        fm = new FileManager(filePathString);
+                        // have the file manager create a new save file
+                        if (!fm.createProjectDirectory(newFileName)) {
+                            int result = JOptionPane.showConfirmDialog(null,
+                                "Failed to create a save filepath",
+                                "Exit Program", JOptionPane.DEFAULT_OPTION);
+                            if (result == 0) System.exit(0);
+                        };
                         new programwindow(newFileName);
                     }
                 });
@@ -151,52 +167,36 @@ public class windowMain {
         openExisting.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                openFileChooser();
+                openFolderChooser();
             }
         });
 
         this.frame.setVisible(true);
     }
 
-    private static String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
-            return fileName.substring(dotIndex + 1).toLowerCase();
-        }
-        return "";
-    }
-
-    private static boolean isValidFileType(String fileExtension) {
-        return fileExtension.equals("wav") || fileExtension.equals("mp3");
-    }
-
-    private void openFileChooser() {
+    private void openFolderChooser() {
         String cwd = System.getProperty("user.dir");
         File workingDir = new File(cwd);
-        File projectsDir = new File(cwd + File.separator + "projects");
+        File projectsDir = new File(cwd + File.separator + "bin");
         if (projectsDir.exists() && projectsDir.isDirectory()) {
             workingDir = projectsDir;
         }
 
         final JFileChooser chooseFile = new JFileChooser(workingDir);
+        chooseFile.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooseFile.setBackground(new Color(43, 43, 43));
         chooseFile.setForeground(Color.WHITE);
-
+        chooseFile.setAcceptAllFileFilterUsed(false);
         int returnValue = chooseFile.showOpenDialog(frame);
 
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = chooseFile.getSelectedFile();
             String fileName = selectedFile.getName();
-            String fileExtension = getFileExtension(fileName);
 
-            if (isValidFileType(fileExtension)) {
-                errorMessageLabel.setText("");
-                System.out.println("Valid file selected: " + selectedFile.getAbsolutePath());
-                frame.setVisible(false);
-                new programwindow("Current Project");
-            } else {
-                showErrorWindow("Invalid file type. Only .wav and .mp3 files are allowed.");
-            }
+            errorMessageLabel.setText("");
+            frame.setVisible(false);
+            fm = new FileManager(selectedFile.getAbsolutePath());
+            new programwindow(selectedFile.getName());
         }
     }
 
@@ -221,7 +221,7 @@ public class windowMain {
             @Override
             public void actionPerformed(ActionEvent e) {
                 errorFrame.dispose();
-                openFileChooser();
+                openFolderChooser();
             }
         });
 
@@ -271,7 +271,8 @@ public class windowMain {
             programPanel.add(controlPanel, BorderLayout.LINE_START);
             programPanel.add(displayPanel, BorderLayout.CENTER);
             programFrame.add(programPanel);
-            programFrame.setJMenuBar(new topMenu().menuBar);
+            topMenu tm = new topMenu(fm); // passing file manager for recording menu
+            programFrame.setJMenuBar(tm.menuBar);
         }
 
         public static JFrame getFrame() {

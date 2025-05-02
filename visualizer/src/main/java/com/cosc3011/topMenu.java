@@ -4,10 +4,17 @@ import javax.swing.JMenuBar;
 
 public class topMenu {
     JMenuBar menuBar = new JMenuBar();
-    public topMenu() {
+    FileManager myFM;
+    public topMenu(FileManager fm) {
+        myFM = fm;
         // Create the menu bar and add it to the frame
         menuBar.add(new FileMenu());
+        menuBar.add(new audioMenu());
         menuBar.add(new SettingsMenu());
-        menuBar.add(new recordingMenu());
+        recordingMenu rm = new recordingMenu();
+        rm.setFileManager(myFM);
+        menuBar.add(rm);
+        
     }
+
 }

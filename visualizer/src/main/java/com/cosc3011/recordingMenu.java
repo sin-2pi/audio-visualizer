@@ -1,20 +1,17 @@
 package com.cosc3011;
 
 import javax.swing.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.awt.*;
-import java.io.File;
 
 // class for the recording drop down menu
 public class recordingMenu extends JMenu {
     // initialize gifcapture item and filepath information
     GifCapture recording = new GifCapture();
-    Path currentDir = Paths.get("").toAbsolutePath();
-    String filePathString = currentDir.toString();
-    String savePath = filePathString + "/save/";
+    private FileManager myFM;
+    // save path starts as current directory and is updated once assigned a file manager
+    private String savePath = System.getProperty("user.dir");;
     public recordingMenu() {
         super("Recording");
 
@@ -25,13 +22,6 @@ public class recordingMenu extends JMenu {
 
         // start capture button
         startItem.addActionListener(e -> {
-            // attempt to create save folder
-            if (!createSaveFolder(savePath)) {
-                int result = JOptionPane.showConfirmDialog(null,
-                    "Failed to create a save filepath",
-                    "Exit Program", JOptionPane.DEFAULT_OPTION);
-                if (result == 0) System.exit(0);
-            }
             // create gif name with formatted timestamp
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
@@ -86,7 +76,7 @@ public class recordingMenu extends JMenu {
             // update values in gif capture
             // path updating
             String newPath = field2.getText();
-            if (!createSaveFolder(newPath)) {
+            if (!FileManager.createSaveFolder(newPath)) {
                 int result2 = JOptionPane.showConfirmDialog(null,
                     "Failed to create a save filepath, reverting to default",
                     "Error", JOptionPane.DEFAULT_OPTION);
@@ -108,21 +98,8 @@ public class recordingMenu extends JMenu {
         }
     }
 
-    // attempts to create save folder
-    // returns false on failure and true when successful
-    private boolean createSaveFolder(String path) {
-        String filePath = path + "tmp.txt";
-
-        File file = new File(filePath);
-        File parentDir = file.getParentFile();
-
-        if (parentDir != null && !parentDir.exists()) {
-            if (!parentDir.mkdirs()) {
-                return false;
-            }
-        } else if (parentDir == null) {
-            return false;
-        }
-        return true;
+    public void setFileManager(FileManager fm) {
+        myFM = fm;
+        savePath = myFM.getProjectDir();
     }
 }
