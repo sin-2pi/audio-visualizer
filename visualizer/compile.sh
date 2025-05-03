@@ -1,5 +1,7 @@
 # I'm leaving this script because Im assuming that Tyson used it for compiling
 # some of the paths would have to be modified for its use again
+# NOTE: the newest version of the project has dependencies managed by maven
+# you will have to use maven to compile, I highly doubt this script will work
 
 #!/usr/bin/env bash
 set -euo pipefail

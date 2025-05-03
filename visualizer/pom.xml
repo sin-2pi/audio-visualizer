@@ -39,6 +39,13 @@
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/TarsosDSP-2.3.jar</systemPath>
     </dependency>
+    <dependency>
+      <groupId>com.madgag.fmsware</groupId>
+      <artifactId>animated-gif-lib-for-java.jar</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/animated-gif-lib-for-java.jar</systemPath>
+    </dependency>
   </dependencies>
 
   <build>
