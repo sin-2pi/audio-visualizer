@@ -11,10 +11,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilenameFilter;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -22,7 +30,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+
+import com.audioseperator.BrassSeparationStrategy;
+import com.audioseperator.SpectralSubtractionStrategy;
+import com.audioseperator.audioPlayer;
+import com.audioseperator.audioPlayer;
 
 @SuppressWarnings("unused")
 public class windowMain {
@@ -196,7 +210,6 @@ public class windowMain {
             errorMessageLabel.setText("");
             frame.setVisible(false);
             String filePath = selectedFile.getAbsolutePath() + "/";
-            System.out.println(filePath);
             fm = new FileManager(filePath);
             new programwindow(selectedFile.getName());
         }
@@ -251,7 +264,8 @@ public class windowMain {
             c.insets = ins;
             c.gridx = 0;
 
-            JCheckBox instrument1 = new JCheckBox("Bass", true);
+            JButton instrument1 = new JButton("Brass");
+            instrument1.addActionListener(e -> startVisualization(fm.getProjectDir(), "brass"));
             c.gridy = 0;
             controlPanel.add(instrument1, c);
             JCheckBox instrument2 = new JCheckBox("Keys", true);
@@ -263,7 +277,8 @@ public class windowMain {
             JCheckBox instrument4 = new JCheckBox("String", true);
             c.gridy = 3;
             controlPanel.add(instrument4, c);
-            JCheckBox instrument5 = new JCheckBox("Vocals", true);
+            JButton instrument5 = new JButton("Vocals");
+            instrument5.addActionListener(e -> startVisualization(fm.getProjectDir(), "vocals"));
             c.gridy = 4;
             controlPanel.add(instrument5, c);
             JCheckBox instrument6 = new JCheckBox("Winds", true);
@@ -273,8 +288,81 @@ public class windowMain {
             programPanel.add(controlPanel, BorderLayout.LINE_START);
             programPanel.add(displayPanel, BorderLayout.CENTER);
             programFrame.add(programPanel);
-            topMenu tm = new topMenu(fm); // passing file manager for recording menu
+            topMenu tm = new topMenu(fm); // passing file manager for sub menus
             programFrame.setJMenuBar(tm.menuBar);
+        }
+
+        public static void startVisualization(String filePath, String type) {
+            // visualizations using the different wav files
+            // find most recent file for the given type and start visualizer for it
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+            if (type == "vocals") {
+                // first we need to find the most recent brass file in the folder
+                File path = new File(filePath);
+                FilenameFilter vocals = new FilenameFilter()
+                {
+                public boolean accept(File directory, String filename) {
+                    return filename.startsWith("vocals_"); // find only brass files
+                }
+                };
+                // this massive try catch block will find the most recent one
+                // the File object will be stored in path variable
+                File[] files = path.listFiles(vocals);
+                Date parsedDate;
+                try {
+                    parsedDate = dateFormat.parse("2025-01-00-00-00-00");
+                    for (File f: files) {
+                        String time = f.getName().substring(7, 26);
+                        try {
+                            Date temp = dateFormat.parse(time);
+                            if (temp.getTime() > parsedDate.getTime()) {
+                                parsedDate = temp;
+                                path = f;
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                // finally extract the absolute path from the path object
+                String audioFile = path.getAbsolutePath();
+                new audioPlayer(audioFile, type); // start visualizer
+            } else if (type == "brass") {
+                // first we need to find the most recent brass file in the folder
+                File path = new File(filePath);
+                FilenameFilter brass = new FilenameFilter()
+                {
+                public boolean accept(File directory, String filename) {
+                    return filename.startsWith("brass_"); // find only brass files
+                }
+                };
+                // this massive try catch block will find the most recent one
+                // the File object will be stored in path variable
+                File[] files = path.listFiles(brass);
+                Date parsedDate;
+                try {
+                    parsedDate = dateFormat.parse("2025-01-00-00-00-00");
+                    for (File f: files) {
+                        String time = f.getName().substring(6, 25);
+                        try {
+                            Date temp = dateFormat.parse(time);
+                            if (temp.getTime() > parsedDate.getTime()) {
+                                parsedDate = temp;
+                                path = f;
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                // finally extract the absolute path from the path object
+                String audioFile = path.getAbsolutePath();
+                new audioPlayer(audioFile, type); // start visualizer
+            }
         }
 
         public static JFrame getFrame() {

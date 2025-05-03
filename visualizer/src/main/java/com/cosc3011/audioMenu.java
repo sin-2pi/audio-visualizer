@@ -2,6 +2,7 @@ package com.cosc3011;
 
 import javax.swing.*;
 import com.audioseperator.*;
+import com.cosc3011.windowMain.programwindow;
 
 public class audioMenu extends JMenu {
     FileManager myFM;
@@ -23,7 +24,10 @@ public class audioMenu extends JMenu {
                 audioSeperator.run(fileMenu.getAudioFile(), myFM.getProjectDir());
             }
         });
-        visualizeItem.addActionListener(e -> System.out.println("Visualize opened"));
+        visualizeItem.addActionListener(e -> {
+            programwindow.startVisualization(myFM.getProjectDir(), "brass");
+            programwindow.startVisualization(myFM.getProjectDir(), "vocals");
+        });
 
         // Add the menu items to Settings menu
         add(parseItem);

@@ -34,7 +34,9 @@ public class recordingMenu extends JMenu {
                 recording.startCapture(windowMain.programwindow.getFrame());
             } catch (InterruptedException p) {
                 p.printStackTrace();
-                System.out.println("Gif recording failed!");
+                int result = JOptionPane.showConfirmDialog(null,
+                    "Failed to record gif",
+                    "Error", JOptionPane.DEFAULT_OPTION);
             }
         });
         // stop capture button

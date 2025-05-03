@@ -17,7 +17,6 @@ public class FileManager {
         // little more robust and creates the save folder without anything in it
         // this way we can save the project folders with .wav files there
         if (createSaveFolder(projectDir)) {
-            System.out.println("Project folder created at: " + projectDir);
             return true;
         } else {
             return false;
