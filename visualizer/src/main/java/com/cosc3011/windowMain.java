@@ -264,6 +264,8 @@ public class windowMain {
             c.insets = ins;
             c.gridx = 0;
 
+            // changed to button to launch a visualization
+            // only way I could figure out how to do it
             JButton instrument1 = new JButton("Brass");
             instrument1.addActionListener(e -> startVisualization(fm.getProjectDir(), "brass"));
             c.gridy = 0;
@@ -277,6 +279,8 @@ public class windowMain {
             JCheckBox instrument4 = new JCheckBox("String", true);
             c.gridy = 3;
             controlPanel.add(instrument4, c);
+            // changed to button to launch a visualization
+            // only way I could figure out how to do it
             JButton instrument5 = new JButton("Vocals");
             instrument5.addActionListener(e -> startVisualization(fm.getProjectDir(), "vocals"));
             c.gridy = 4;

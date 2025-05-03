@@ -4,6 +4,17 @@ import javax.swing.*;
 import com.audioseperator.*;
 import com.cosc3011.windowMain.programwindow;
 
+/*
+    audioMenu.java
+    written by Aaron Krapes
+    COSC 3011 Final Project
+
+    drop down for the audio menu
+    allows user to parse/separate an opened audio file
+    also allows user to start visualizations
+    visualizations are currently static due to library difficulties
+ */
+
 public class audioMenu extends JMenu {
     FileManager myFM;
     FileMenu fileMenu;

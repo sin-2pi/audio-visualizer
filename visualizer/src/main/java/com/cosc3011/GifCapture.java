@@ -15,6 +15,10 @@ import javax.swing.Timer;
 import com.madgag.gif.fmsware.*;;
 
 /* 
+    gifCapture.java
+    written by Aaron Krapes
+    COSC 3011 Final Project
+    
     USAGE:
     GifCapture name = new GifCapture()
     name.updatePath() changes where the gif is saved

@@ -7,6 +7,10 @@ import java.io.File;
 import java.io.IOException;
 
 /* 
+    audioPlayer.java
+    written by Aaron Krapes
+    COSC 3011 Final Project
+
     creates a pop up window with an audio player that displays the files waveform
     using this to display each parsed audio file
 
@@ -23,7 +27,7 @@ public class audioPlayer extends JFrame {
     public audioPlayer(String filePath, String windowName) {
         // setup window
         super(windowName);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800, 300);
         setLayout(new BorderLayout());
 
@@ -69,6 +73,7 @@ public class audioPlayer extends JFrame {
                 "Failed to open .wav file",
                 "Error", JOptionPane.DEFAULT_OPTION);
             e.printStackTrace();
+        } finally {
             dispose();
         }
         setVisible(true);

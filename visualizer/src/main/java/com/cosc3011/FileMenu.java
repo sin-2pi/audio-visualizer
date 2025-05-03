@@ -24,6 +24,8 @@ public class FileMenu extends JMenu {
         // Add action listeners to the menu items
         newItem.addActionListener(e -> new windowMain());
         openItem.addActionListener(e ->  {
+            // allow user to select .wav files only
+            // loop will break when they close the file manager
             File selectedFile = openFileChooser(frame);
             String fileName = selectedFile.getName();
             String fileExtension = getFileExtension(fileName);
@@ -35,6 +37,7 @@ public class FileMenu extends JMenu {
                 fileName = selectedFile.getName();
                 fileExtension = getFileExtension(fileName);
             }
+            // set the audio file variable for later use
             if (!selectedFile.isDirectory()) {
                 audioFile = selectedFile.getAbsolutePath();
                 String message = "File " + fileName + " was successfully opened!";
@@ -64,6 +67,8 @@ public class FileMenu extends JMenu {
         return fileExtension.equals("wav");
     }
 
+    // using old filechooser function(s) in order to get the .wav file
+    // also has a pop up so the user knows they are successful in opening
     public static File openFileChooser(JFrame frame) {
         String cwd = System.getProperty("user.dir");
         File workingDir = new File(cwd);

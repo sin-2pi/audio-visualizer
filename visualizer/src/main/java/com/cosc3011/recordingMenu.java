@@ -5,7 +5,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.awt.*;
 
-// class for the recording drop down menu
+/*
+    recordingMenu.java
+    written by Aaron Krapes
+    COSC 3011 Final Project
+
+    drop down for the recording menu
+    utilizing GifCapture class to capture gifs of visualizations
+    note that the visualizations are currently static
+ */
+
 public class recordingMenu extends JMenu {
     // initialize gifcapture item and filepath information
     GifCapture recording = new GifCapture();
