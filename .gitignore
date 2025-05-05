@@ -1,3 +1,4 @@
 # Ignore Java build output
-target/
 *.class
+
+/visualizer/target/

@@ -240,14 +240,14 @@ public class windowMain {
         }
         });
 
-        // Add panel to frame
-        frame.add(mainPanel, BorderLayout.CENTER);
+        // // Add panel to frame
+        // frame.add(mainPanel, BorderLayout.CENTER);
 
-        // Add buttons to panel
-        mainPanel.add(create);
-        mainPanel.add(or);
-        mainPanel.add(openExisting);
-        mainPanel.add(errorMessageLabel); // Add the error label to the window
+        // // Add buttons to panel
+        // mainPanel.add(create);
+        // mainPanel.add(or);
+        // mainPanel.add(openExisting);
+        // mainPanel.add(errorMessageLabel); // Add the error label to the window
 
         this.frame.setVisible(true);
     }
