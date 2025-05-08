@@ -1,6 +1,6 @@
 # Audio Visualizer
 
-## Instructions to run
+### Instructions to run
 
 We used Maven as our dependency manager, so you must have this installed to run our program.
 
